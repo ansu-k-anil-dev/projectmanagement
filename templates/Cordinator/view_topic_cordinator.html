@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <div class="content container-fluid">
+               <div class="page-header">
+                  <div class="row align-items-center">
+                     <div class="col">
+                        <h3 class="page-title">Topic Info</h3>
+                        <ul class="breadcrumb">
+                           <li class="breadcrumb-item"><a href="">Cordinator</a></li>
+                           <li class="breadcrumb-item active">View Topic Info</li>
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-sm-12">
+                  {% include 'includes/messages.html' %}
+                     <div class="card card-table">
+                        <div class="card-body">
+                           <div class="table-responsive">
+                              <table id="table_id" class="table table-hover table-center mb-0">
+                                 <thead>
+                                    <tr>
+                                       <th>#</th>
+                                       <th>Group</th>
+                                       <th>Title</th>
+                                       <th>Abstract</th>
+                                       <th>Submitted On</th>
+                                       <th>Remarks</th>
+                                       <td>Updated On</td>
+                                       <th>Status</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                 {% if topic_data %}
+                                    {% for i in topic_data %}
+
+                                    <tr>
+                                       <td>
+                                          {{ forloop.counter }}
+                                       </td>
+                                       <td>
+                                          Group {{ i.student_group.id }}
+                                       </td>
+                                       <td>
+                                             {{ i.title }}
+                                       </td>
+                                       <td>
+                                          {{ i.abstract }}
+                                       </td>
+                                       <td>
+                                          {{ i.submitted_on }}
+                                       </td>
+                                       <td>
+                                          {% if i.remarks %}
+                                          {{ i.remarks }}
+                                          {% else %}
+                                          <form method="post" action="{% url 'view_topic_cordinator' %}">
+                                             {% csrf_token %}
+                                             <input type="hidden" name="topic_id" value="{{ i.id }}">
+                                             <textarea class="form-contol" name="remark" required></textarea>
+                                             <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-plus"></i></button>
+                                          </form>
+                                          {% endif %}
+                                       </td>
+                                       <td>
+                                          {{ i.updated_on }}
+                                       </td>
+                                       <td>
+                                          {{ i.status }}
+                                       </td>
+                                    </tr>
+                                 {% endfor %}
+
+                                 {% else %}
+                                    You are not assigned to any groups. Please Contact Cooridinator for more details. 
+                                 {% endif %}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+
+{% endblock%}

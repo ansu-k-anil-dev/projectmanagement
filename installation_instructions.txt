@@ -1,0 +1,6 @@
+1. extract zip files to a directory
+2. open project directory that contains 'manage.py' on any IDE
+3. create virtual env using IDE terminal. for python use 'python -m venv env' to create env
+4. activate env using env\Scripts\activate or env/Scripts/activate
+5. install required libraries in requirements.txt by using 'pip install requirements.txt'
+6. run django project by using 'python manage.py runserver'

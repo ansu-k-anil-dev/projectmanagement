@@ -1,0 +1,224 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+      <title>ProjectManagement - Registration</title>
+      <link rel="shortcut icon" href="">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,400&amp;display=swap">
+      <link rel="stylesheet" href="{% static 'assets/plugins/bootstrap/css/bootstrap.min.css' %}">
+      <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome/css/fontawesome.min.css' %}">
+      <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome/css/all.min.css' %}">
+      <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+      <style>
+         .password-requirements {
+             font-size: 0.875rem;
+             margin-top: 0.5rem;
+             color: #6c757d;
+         }
+         .password-requirements ul {
+             list-style: none;
+             padding-left: 0;
+             margin-top: 0.25rem;
+         }
+         .password-requirements li {
+             margin-bottom: 0.25rem;
+         }
+         .valid-requirement {
+             color: #28a745;
+         }
+         .invalid-requirement {
+             color: #dc3545;
+         }
+     </style>
+   </head>
+   <body>
+      <div class="main-wrapper login-body">
+         <div class="login-wrapper">
+            <div class="container">
+               <div class="loginbox">
+                  <div class="login-left">
+                     <img class="img-fluid" src="{% static 'assets/img/home_logo2.png '%}" alt="">
+                  </div>
+                  <div class="login-right">
+                     <div class="login-right-wrap">
+                        <h1>Register</h1>
+                        <p class="account-subtitle">Register to get Access</p>
+                         {% if messages %}
+                         {% for message in messages %}
+                             {% if message.tags == 'error' %}
+                         <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            {{message}}
+                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                         </div>
+                             {% endif %}
+                         {% endfor %}
+                        {% endif %}
+                        <form action="{% url 'add_student' %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {% include 'includes/messages.html' %}
+                           <div class="form-group">
+                               <label>First Name</label>
+                              <input type="text" class="form-control" name="first_name" required">
+                           </div>
+                           <div class="form-group">
+                              <label>Last Name</label>
+                              <input type="text" class="form-control" name="last_name" required>
+                           </div>
+                           <div class="form-group">
+                              <label>Programe</label>
+                              <input type="text" class="form-control" name="programe" required>
+                           </div>
+                           <div class="form-group">
+                               <label>Academic Year</label>
+                               <select class="form-control" name="academic_year" required>
+                                  <option value="">Choose Option</option>
+                                     <option value="2020-2024">2020-2024</option>
+                                     <option value="2021-2025">2021-2025</option>
+                                     <option value="2022-2026">2022-2026</option>
+                                     <option value="2023-2027">2023-2027</option>
+                                     <option value="2024-2028">2024-2028</option>
+                                     <option value="2025-2029">2025-2029</option>
+                               </select>
+                           </div>
+                           <div class="form-group">
+                              <label>Email</label>
+                              <input type="email"
+                              class="form-control"
+                              name="email"
+                              pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" 
+                              title="Please enter a valid email address (e.g., example@domain.com)"
+                              required>
+                           </div>
+                           <div class="form-group">
+                              <label>User Name</label>
+                              <input type="text" class="form-control" name="username" required>
+                           </div>
+                           <div class="form-group">
+                               <label>Gender</label>
+                               <select class="form-control" name="gender" required>
+                                  <option value="">Choose Option</option>
+                                     <option value="Male">Male</option>
+                                     <option value="Female">Female</option>
+                                     <option value="Others">Others</option>
+                               </select>
+                           </div>
+                           <div class="form-group">
+                              <label>Phone Number</label>
+                              <input 
+                              type="tel" 
+                              class="form-control" 
+                              name="phone"
+                              pattern="[6-9][0-9]{9}"
+                              maxlength="10" 
+                              title="Please enter a 10-digit phone number starting with 6, 7, 8, or 9"
+                              required>
+                           </div>
+                           <div class="form-group">
+                              <label>Date of Birth</label>
+                              <input type="date" class="form-control" name="dob" required>
+                           </div>
+                           <div class="form-group">
+                              <label>Password</label>
+                              <input type="password" 
+                                    class="form-control" 
+                                    id="password" 
+                                    name="password" 
+                                    pattern="^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$"
+                                    required
+                                    oninput="validatePassword(this)"
+                                >
+                           </div>
+                           <div class="password-requirements" id="password-requirements">
+                              Password must contain:
+                              <ul>
+                                  <li id="length">❌ Minimum 8 characters</li>
+                                  <li id="capital">❌ At least one capital letter</li>
+                                  <li id="number">❌ At least one number</li>
+                                  <li id="special">❌ At least one special character (!@#$%^&*)</li>
+                              </ul>
+                          </div>
+                          <div class="invalid-feedback">
+                              Please enter a valid password meeting all requirements.
+                          </div>
+                           <div class="form-group">
+                              <label>Upload Photo</label>
+                              <input type="file" class="form-control" name="profile_pic" required>
+                           </div>
+                           <div class="form-group">
+                              <button class="btn btn-primary btn-block" type="submit">Register</button>
+                           </div>
+                        </form>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <script>
+         function validatePassword(input) {
+             // Get the password value
+             const password = input.value;
+             
+             // Define validation criteria
+             const minLength = password.length >= 8;
+             const hasCapital = /[A-Z]/.test(password);
+             const hasNumber = /[0-9]/.test(password);
+             const hasSpecial = /[!@#$%^&*]/.test(password);
+             
+             // Update requirement indicators
+             updateRequirement('length', minLength);
+             updateRequirement('capital', hasCapital);
+             updateRequirement('number', hasNumber);
+             updateRequirement('special', hasSpecial);
+             
+             // Check if all requirements are met
+             const isValid = minLength && hasCapital && hasNumber && hasSpecial;
+             input.setCustomValidity(isValid ? '' : 'Please meet all password requirements');
+             
+             // Check password match if confirm password is filled
+             checkPasswordMatch();
+         }
+         
+         function updateRequirement(id, isValid) {
+             const element = document.getElementById(id);
+             if (isValid) {
+                 element.innerHTML = '✅ ' + element.innerHTML.substring(2);
+                 element.classList.add('valid-requirement');
+                 element.classList.remove('invalid-requirement');
+             } else {
+                 element.innerHTML = '❌ ' + element.innerHTML.substring(2);
+                 element.classList.add('invalid-requirement');
+                 element.classList.remove('valid-requirement');
+             }
+         }
+         
+         function checkPasswordMatch() {
+             const password = document.getElementById('password');
+             const confirmPassword = document.getElementById('confirm_password');
+             const matchMessage = document.getElementById('password-match-message');
+             
+             if (confirmPassword.value === '') {
+                 confirmPassword.setCustomValidity('');
+                 matchMessage.style.display = 'none';
+                 return;
+             }
+             
+             if (password.value === confirmPassword.value) {
+                 confirmPassword.setCustomValidity('');
+                 matchMessage.style.display = 'none';
+             } else {
+                 confirmPassword.setCustomValidity('Passwords do not match');
+                 matchMessage.style.display = 'block';
+             }
+         }
+         </script>
+      <script src="{% static 'assets/js/jquery-3.6.0.min.js '%}"></script>
+      <script src="{% static 'assets/js/popper.min.js'%}"></script>
+      <script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js '%}"></script>
+      <script src="{% static 'assets/js/script.js' %}"></script>
+   </body>
+</html>

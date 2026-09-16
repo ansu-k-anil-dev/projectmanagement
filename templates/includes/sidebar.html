@@ -1,0 +1,103 @@
+{% load active_link_tags %}
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-inner slimscroll">
+        <div id="sidebar-menu" class="sidebar-menu">
+            {% if user.user_type == '1' %}
+                <ul>
+                    <li class="menu-title">
+                        <span>Main Menu</span>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'add_tender' %}"><i class="fas fa-info"></i> <span>Add Tender</span></a>
+                    </li>
+
+                    <li class="submenu {% active_link 'admin_view_application' 'active' %} {% active_link 'admin_application_status' 'active' %}">
+                        <a href="#"><i class="fas fa-paper-plane"></i> <span> Applications</span> <span class="menu-arrow"></span></a>
+                        <ul>
+                            <li><a href="{% url 'admin_view_application' %}">Requests</a></li>
+                            <li><a href="{% url 'admin_application_status' %}">History & Status</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="submenu {% active_link 'view_plan' 'active' %} {% active_link 'add_plan' 'active' %}">
+                        <a href="#"><i class="fas fa-building"></i> <span> Plans</span> <span class="menu-arrow"></span></a>
+                        <ul>
+                            <li><a href="{% url 'view_plan' %}">View</a></li>
+                            <li><a href="{% url 'add_plan' %}">Add</a></li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'doLogout' %}"><i class="fas fa-sign-out-alt"></i> <span>LogOut</span></a>
+                    </li>
+                </ul>
+            {% elif user.user_type == '2' %}
+                <ul>
+                    <li class="menu-title">
+                        <span>Main Menu - Cordinator</span>
+                    </li>
+
+                    <li class="submenu {% active_link 'view_students' 'active' %} {% active_link 'view_student_group' 'active' %}">
+                        <a href="#"><i class="fas fa-paper-plane"></i> <span> Works</span> <span class="menu-arrow"></span></a>
+                        <ul>
+                            <li><a href="{% url 'view_students' %}">View Students</a></li>
+                            <li><a href="{% url 'view_student_group' %}">View Student Groups</a></li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'view_topic_cordinator' %}"><i class="fas fa-building"></i> <span>Topic Info</span></a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'view_presentation_cordinator' %}"><i class="fas fa-building"></i> <span>Presentation Info</span></a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'view_record_cordinator' %}"><i class="fas fa-building"></i> <span>Record Info</span></a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'view_project_cordinator' %}"><i class="fas fa-building"></i> <span>Project Info</span></a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'doLogout' %}"><i class="fas fa-sign-out-alt"></i> <span>LogOut</span></a>
+                    </li>
+                </ul>
+
+            {% else %}
+                <ul>
+                    <li class="menu-title">
+                        <span>Main Menu - Student</span>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'view_group' %}"><i class="fas fa-building"></i> <span>Group Info</span></a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'view_topic' %}"><i class="fas fa-building"></i> <span>Topic Info</span></a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'view_presentation' %}"><i class="fas fa-building"></i> <span>Presentation Info</span></a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'view_record' %}"><i class="fas fa-building"></i> <span>Record Info</span></a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'view_project' %}"><i class="fas fa-building"></i> <span>Project Info</span></a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'doLogout' %}"><i class="fas fa-sign-out-alt"></i> <span>LogOut</span></a>
+                    </li>
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+</div>

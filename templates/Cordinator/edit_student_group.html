@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card ">
+            <div class="card-body ">
+                <form method="post" action="{% url 'update_student_group' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="col-12">
+                        <h5 class="form-title"><span>Edit Student Group Info</span></h5>
+                    </div>
+                    {{ form.as_p }}
+                    <input type="hidden" class="form-control" name="group_id" value="{{ group_id }}" required readonly>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-success">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

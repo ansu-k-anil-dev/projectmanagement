@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+{% block content %}
+
+    <div class="content container-fluid">
+               <div class="page-header">
+                  <div class="row align-items-center">
+                     <div class="col">
+                        <h3 class="page-title">Group Info</h3>
+                        <ul class="breadcrumb">
+                           <li class="breadcrumb-item"><a href="">Student</a></li>
+                           <li class="breadcrumb-item active">View Group Info</li>
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-sm-12">
+                  {% include 'includes/messages.html' %}
+                     <div class="card card-table">
+                        <div class="card-body">
+                           <div class="table-responsive">
+                              <table id="table_id" class="table table-hover table-center mb-0">
+                                 <thead>
+                                    <tr>
+                                       <th>#</th>
+                                       <th>
+                                          Members
+                                       </th>
+                                       <th>Submission Dates</th>
+                                       <th>Status</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                 {% if student_groups %}
+                                    {% for i in student_groups %}
+
+                                    <tr>
+                                       <td>
+                                          Group {{ i.id }}
+                                       </td>
+                                       <td>
+                                             {% for student in i.student.all %}
+                                             {{ student.admin.first_name }} {{ student.admin.last_name }} &nbsp;
+                                             </a>
+                                             <br>
+                                             {% empty %}
+                                                   No students assigned
+                                             {% endfor %}
+                                       </td>
+                                       <td>
+                                          Topic: {{ i.topic_submission_date }}<br>
+                                          Presentation: {{ i.presentation_submission_date }}<br>
+                                          Report: {{ i.record_submission_date }}<br>
+                                          Final Project: {{ i.project_submission_date }}
+                                       </td>
+                                       <td>
+                                          {% if not i.is_topic_submitted and not i.is_presentation_submitted and not i.is_record_submitted and not i.is_project_submitted %}
+                                             Topic: Not Submitted &nbsp; <a href="{% url 'add_topic' i.id %}">Add</a> <br>
+                                             Presentation: Not Submitted <br>
+                                             Report: Not Submitted <br>
+                                             Final Project: Not Submitted <br>
+                                          {% elif i.is_topic_submitted and not i.is_presentation_submitted and not i.is_record_submitted and not i.is_project_submitted %}
+                                             Topic: Submitted <br>
+                                             Presentation: Not Submitted &nbsp; <a href="{% url 'add_presentation' i.id %}">Add</a> <br> 
+                                             Report: Not Submitted <br>
+                                             Final Project: Not Submitted <br>
+                                          {% elif i.is_topic_submitted and i.is_presentation_submitted and not i.is_record_submitted and not i.is_project_submitted %}
+                                             Topic: Submitted <br>
+                                             Presentation: Submitted <br>
+                                             Report: Not Submitted &nbsp; <a href="{% url 'add_record' i.id %}">Add</a> <br>
+                                             Final Project: Not Submitted <br>
+                                          {% elif i.is_topic_submitted and i.is_presentation_submitted and not i.is_record_submitted and not i.is_project_submitted %}
+                                             Topic: Submitted <br>
+                                             Presentation: Submitted <br>
+                                             Report: Not Submitted <br>
+                                             Final Project: Not Submitted <br>
+                                          {% elif i.is_topic_submitted and i.is_presentation_submitted and i.is_record_submitted and not i.is_project_submitted %}
+                                             Topic: Submitted <br>
+                                             Presentation: Submitted <br>
+                                             Report: Submitted <br>
+                                             Final Project: Not Submitted &nbsp; <a href="{% url 'add_project' i.id %}">Add</a> <br>
+                                          {% elif i.is_topic_submitted and i.is_presentation_submitted and i.is_record_submitted and i.is_project_submitted %}
+                                             Topic: Submitted <br>
+                                             Presentation: Submitted <br>
+                                             Report: Submitted <br>
+                                             Final Project: All Phases Has Been Completed <br>
+                                          {% endif %}
+                                       </td>
+                                    </tr>
+                                 {% endfor %}
+
+                                 {% else %}
+                                    You are not assigned to any groups. Please Contact Cooridinator for more details. 
+                                 {% endif %}
+                                 </tbody>
+                              </table>
+                              {% if evaluations %}
+                              <div class="row mt-4">
+                                 <div class="col-sm-12">
+                                       <div class="card">
+                                          <div class="card-header">
+                                             <h4 class="card-title">Project Evaluation Results</h4>
+                                          </div>
+                                          <div class="card-body">
+                                             <div class="table-responsive">
+                                                   <table class="table table-bordered table-striped">
+                                                      <thead>
+                                                         <tr>
+                                                               <th>Group</th>
+                                                               <th>Project Title</th>
+                                                               <th>Viva Mark</th>
+                                                               <th>Demo Mark</th>
+                                                               <th>Presentation Mark</th>
+                                                               <th>Internal Mark</th>
+                                                               <th>Internal Grade</th>
+                                                               <th>Remarks</th>
+                                                         </tr>
+                                                      </thead>
+                                                      <tbody>
+                                                         {% for group in student_groups %}
+                                                               {% if evaluations|get_item:group.id %}
+                                                                  {% with eval=evaluations|get_item:group.id %}
+                                                                  <tr>
+                                                                     <td>Group {{ group.id }}</td>
+                                                                     <td>{{ eval.project_title }}</td>
+                                                                     <td>
+                                                                           {% if eval.viva_mark %}
+                                                                              <span class="badge badge-success">{{ eval.viva_mark }}</span>
+                                                                           {% else %}
+                                                                              <span class="badge badge-secondary">-</span>
+                                                                           {% endif %}
+                                                                     </td>
+                                                                     <td>
+                                                                           {% if eval.demo_mark %}
+                                                                              <span class="badge badge-success">{{ eval.demo_mark }}</span>
+                                                                           {% else %}
+                                                                              <span class="badge badge-secondary">-</span>
+                                                                           {% endif %}
+                                                                     </td>
+                                                                     <td>
+                                                                           {% if eval.presentation_mark %}
+                                                                              <span class="badge badge-success">{{ eval.presentation_mark }}</span>
+                                                                           {% else %}
+                                                                              <span class="badge badge-secondary">-</span>
+                                                                           {% endif %}
+                                                                     </td>
+                                                                     <td>
+                                                                           <span class="badge badge-primary">{{ eval.internal_mark }}</span>
+                                                                     </td>
+                                                                     <td>
+                                                                           <span class="badge badge-info">{{ eval.internal_grade }}</span>
+                                                                     </td>
+                                                                     <td>{{ eval.remark }}</td>
+                                                                  </tr>
+                                                                  {% endwith %}
+                                                               {% endif %}
+                                                         {% endfor %}
+                                                      </tbody>
+                                                   </table>
+                                             </div>
+                                          </div>
+                                       </div>
+                                 </div>
+                              </div>
+                              {% endif %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+
+{% endblock%}

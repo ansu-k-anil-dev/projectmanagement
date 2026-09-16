@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <div class="content container-fluid">
+               <div class="page-header">
+                  <div class="row align-items-center">
+                     <div class="col">
+                        <h3 class="page-title">Student Groups</h3>
+                        <ul class="breadcrumb">
+                           <li class="breadcrumb-item"><a href="">Dashboard</a></li>
+                           <li class="breadcrumb-item active">View Student Groups</li>
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+               <!-- Add this new div for the download button -->
+               {% if user_role == 'Cordinator' %}
+               <div class="row mb-3">
+                   <div class="col-12 text-right">
+                       <a href="{% url 'download_evaluations_excel' %}" class="btn btn-primary">
+                           <i class="fas fa-download mr-2"></i> Download All Evaluations
+                       </a>
+                   </div>
+               </div>
+               {% endif %}
+               <!-- End of new div -->
+               <div class="row">
+                  <div class="col-sm-12">
+                  {% include 'includes/messages.html' %}
+                     <div class="card card-table">
+                        <div class="card-body">
+                           <div class="table-responsive">
+                              <table id="table_id" class="table table-hover table-center mb-0">
+                                 <thead>
+                                    <tr>
+                                       <th>#</th>
+                                       <th>
+                                          Students
+                                       </th>
+                                       <th>Submission Dates</th>
+                                       {% if user_role == 'Cordinator' %}
+                                          <th class="text-right">Action</th>
+                                       {% endif %}
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                 {% for i in student_groups %}
+
+                                    <tr>
+                                       <td>
+                                          Group {{ i.id }}
+                                          {% if user_role == 'Cordinator' %}
+                                             <a href="{% url 'add_student_to_group' i.id %}" title="add a student">
+                                                <i class="bi bi-plus"></i>
+                                             </a>
+                                          {% endif %}
+                                          <br>
+                                          Assigned Faculty:
+                                          {% if i.assigned_faculty_id %}
+                                             {% for fac in faculties %}
+                                                {% if i.assigned_faculty_id == fac.admin_id %}
+                                                   {{ fac.admin.first_name }} {{ fac.admin.last_name }}
+                                                {% endif %}
+                                             {% endfor %}
+                                          {% else %}
+                                             {% if user_role == 'Cordinator' %}
+                                                <!--Faculty Assign modal Trigger-->
+                                                <button type="button"
+                                                class="btn btn-sm btn-primary"
+                                                data-toggle="modal"
+                                                data-target="#facModal{{ i.id }}">
+                                                   Choose
+                                                </button>
+                                             {% endif %}
+                                          {% endif %}
+                                          <br>
+                                          <!-- mark upload section  starts -->
+                                          Total Marks:
+                                          {% if i.marks_obtained %}
+                                          <!--Faculty Assign modal Trigger-->
+                                          <button type="button"
+                                          class="btn btn-sm btn-primary"
+                                          data-toggle="modal"
+                                          data-target="#viewMarksModal{{ i.id }}">
+                                             View Marks
+                                          </button>
+                                             <!--View Marks  Modal -->
+                                             <div class="modal fade" id="viewMarksModal{{ i.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-xl" role="document">
+                                                   <div class="modal-content">
+                                                      <div class="modal-header">
+                                                      <h5 class="modal-title" id="exampleModalLabel">Obtained Marks for Group {{ i.id }}</h5>
+                                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                         <span aria-hidden="true">&times;</span>
+                                                      </button>
+                                                      </div>
+                                                      <div class="modal-body">
+                                                         <table class="table table-bordered table-responsive">
+                                                             <thead>
+                                                                 <tr>
+                                                                     <th>Project Title</th>
+                                                                     <th>Viva Mark</th>
+                                                                     <th>Demo Mark</th>
+                                                                     <th>Presentation Mark</th>
+                                                                     <th>Internal Mark</th>
+                                                                     <th>Internal Grade</th>
+                                                                     <th>Remark</th>
+                                                                     <th>Added On</th>
+                                                                 </tr>
+                                                             </thead>
+                                                             <tbody>
+                                                                 {% for eval in evaluation_data %}
+                                                                     {% if eval.student_group.id == i.id %}
+                                                                     <tr>
+                                                                         <td>{{ eval.project_title }}</td>
+                                                                         <td>{{ eval.viva_mark|default:"-" }}</td>
+                                                                         <td>{{ eval.demo_mark|default:"-" }}</td>
+                                                                         <td>{{ eval.presentation_mark|default:"-" }}</td>
+                                                                         <td>{{ eval.internal_mark }}</td>
+                                                                         <td>{{ eval.internal_grade }}</td>
+                                                                         <td>{{ eval.remark }}</td>
+                                                                         <td>{{ eval.added_on|date:"d-m-Y H:i" }}</td>
+                                                                     </tr>
+                                                                     {% endif %}
+                                                                 {% empty %}
+                                                                     <tr>
+                                                                         <td colspan="8" class="text-center">No evaluation data available</td>
+                                                                     </tr>
+                                                                 {% endfor %}
+                                                             </tbody>
+                                                         </table>
+                                                     </div>
+                                                   </div>
+                                                </div>
+                                                </div>
+                                             <!-- View obtained Marks  modal ends here -->
+                                          {% else %}
+                                             {% if i.is_project_submitted and user_role == 'Cordinator' %}
+                                                   <!--Mark Upload  modal Trigger-->
+                                                   <button type="button"
+                                                   class="btn btn-sm btn-primary"
+                                                   data-toggle="modal"
+                                                   data-target="#markModal{{ i.id }}">
+                                                      Upload Marks
+                                                   </button>
+                                             {% else %}
+                                                   Awaiting for Project Submission / Mark Upload
+                                             {% endif %}
+                                          {% endif %}
+                                          <!-- mark upload modal trigger button ends -->
+                                          <!--Faculty Assign Modal -->
+                                             <div class="modal fade" id="facModal{{ i.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                             <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                   <div class="modal-header">
+                                                   <h5 class="modal-title" id="exampleModalLabel">Assign Faculty for Group {{ i.id }}</h5>
+                                                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                      <span aria-hidden="true">&times;</span>
+                                                   </button>
+                                                   </div>
+                                                   <div class="modal-body">
+                                                      <table class="table">
+                                                         <thead>
+                                                           <tr>
+                                                             <th scope="col">#</th>
+                                                             <th scope="col">Faculty</th>
+                                                             <th scope="col">Action</th>
+                                                           </tr>
+                                                         </thead>
+                                                         <tbody>
+                                                            {% for j in faculties %}
+                                                               <tr>
+                                                                  <th scope="row">{{ forloop.counter }}</th>
+                                                                  <td>{{ j.admin.first_name }} {{ j.admin.last_name }}</td>
+                                                                  <td>
+                                                                     <form method="post" action="{% url 'assign_faculty' %}">
+                                                                        {% csrf_token %}
+                                                                        <input type="hidden" name="group_id" value="{{ i.id }}" required>
+                                                                        <input type="hidden" name="faculty_id" value="{{ j.admin_id }}" required>
+                                                                        <button type="submit" class="btn btn-sm btn-primary">
+                                                                           Assign
+                                                                        </button>
+                                                                     </form>
+                                                                  </td>
+                                                               </tr>
+                                                           {% endfor %}
+                                                         </tbody>
+                                                       </table>
+                                                   </div>
+                                                </div>
+                                             </div>
+                                             </div>
+                                          <!-- faculty assign modal ends here -->
+                                          
+                                          <!--Mark Assign Modal -->
+                                          <div class="modal fade" id="markModal{{ i.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                             <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                   <div class="modal-header">
+                                                   <h5 class="modal-title" id="exampleModalLabel">Assign Marks for Group {{ i.id }}</h5>
+                                                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                      <span aria-hidden="true">&times;</span>
+                                                   </button>
+                                                   </div>
+                                                   <div class="modal-body">
+                                                      <form method="post" action="{% url 'assign_obtained_mark' %}">
+                                                         {% csrf_token %}
+                                                         <input type="hidden" name="group_id" value="{{ i.id }}" required>
+                                                         {{ evaluation_form }}
+                                                         <br>
+                                                         <button type="submit" class="btn btn-sm btn-primary">
+                                                            Upload
+                                                         </button>
+                                                      </form>
+                                                   </div>
+                                                </div>
+                                             </div>
+                                             </div>
+                                          <!-- mark assign modal ends here -->
+                                       </td>
+                                       <td>
+                                             {% for student in i.student.all %}
+                                                {{ student.admin.first_name }} {{ student.admin.last_name }} &nbsp;
+                                                {% if user_role == 'Cordinator' %}
+                                                   <a href="{% url 'remove_student_from_group' i.id student.id %}" title="remove student from group">
+                                                      <i class="bi bi-x"></i>
+                                                   </a>
+                                                {% endif %}
+                                                <br>
+                                             {% empty %}
+                                                      No students assigned
+                                             {% endfor %}
+                                        </td>
+                                       <td>
+                                          Topic: {{ i.topic_submission_date }}<br>
+                                          Presentation: {{ i.presentation_submission_date }}<br>
+                                          Report: {{ i.record_submission_date }}<br>
+                                          Final Project: {{ i.project_submission_date }}
+                                       </td>
+                                       {% if user_role == 'Cordinator' %}
+                                          <td class="text-right">
+                                             <div class="actions">
+                                                <a href="{% url 'edit_student_group' i.id %}" class="btn btn-sm bg-success-light mr-2">
+                                                <i class="fas fa-pen"></i>
+                                                </a>
+                                                <a href="{% url 'delete_student_group' i.id %}" class="btn btn-sm bg-danger-light">
+                                                <i class="fas fa-trash"></i>
+                                                </a>
+                                             </div>
+                                          </td>
+                                       {% endif %}
+                                    </tr>
+                                 {% endfor %}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+
+{% endblock%}

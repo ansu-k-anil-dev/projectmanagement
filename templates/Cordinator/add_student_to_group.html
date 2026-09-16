@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="content container-fluid">
+   <div class="page-header">
+      <div class="row align-items-center">
+         <div class="col">
+            <h3 class="page-title">Add Students to Group {{ group_id }}</h3>
+            <ul class="breadcrumb">
+               <li class="breadcrumb-item"><a href="">Home</a></li>
+               <li class="breadcrumb-item active">View Students List</li>
+            </ul>
+         </div>
+      </div>
+   </div>
+   <div class="row">
+      <div class="col-sm-12">
+         {% include 'includes/messages.html' %}
+         <div class="card card-table">
+            <div class="card-body">
+               <div class="table-responsive">
+                  <table id="table_id" class="table table-hover table-center mb-0">
+                     <thead>
+                        <tr>
+                           <th><input type="checkbox" id="select_all"></th>
+                           <th>#</th>
+                           <th>Course</th>
+                           <th>Name</th>
+                           <th>Gender</th>
+                           <th>Contact</th>
+                        </tr>
+                     </thead>
+                     <tbody>
+                        {% for i in students %}
+                        <tr>
+                           <td><input type="checkbox" class="student-checkbox" value="{{ i.id }}"></td>
+                           <td>{{ i.id }}</td>
+                           <td>
+                              {{ i.programme }}<br>
+                              {{ i.academic_year }}
+                           </td>
+                           <td>
+                              <img src="/{{ i.admin.profile_pic }}" height="50" width="50">&nbsp;
+                              {{ i.admin.first_name }} {{ i.admin.last_name }}
+                           </td>
+                           <td>{{ i.gender }}</td>
+                           <td>
+                              {{ i.admin.email }} <br>
+                              +91 {{ i.phone }}
+                           </td>
+                        </tr>
+                        {% endfor %}
+                     </tbody>
+                  </table>
+               </div>
+               <!-- Button trigger modal -->
+               <form method="post" action="{% url 'add_student_to_group' group_id %}">
+                  {% csrf_token %}
+                  <input type="hidden" class="form-control" name="group_id" value="{{ group_id }}" required readonly>
+                  <input type="hidden" class="form-control" name="students_ids" id="students_ids" required readonly>
+                  <button type="submit" class="btn btn-primary" id="createGroupBtn">
+                     Update Group
+                  </button>
+               </form>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+<script>
+   document.addEventListener("DOMContentLoaded", function () {
+      const checkboxes = document.querySelectorAll(".student-checkbox");
+      const selectAll = document.getElementById("select_all");
+      const createGroupBtn = document.getElementById("createGroupBtn");
+      const studentsIdsInput = document.getElementById("students_ids");
+
+      function updateButtonVisibility() {
+         const selected = Array.from(checkboxes).some(checkbox => checkbox.checked);
+         createGroupBtn.style.display = selected ? "block" : "none";
+      }
+
+      function updateSelectedStudents() {
+         const selectedIds = Array.from(checkboxes)
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.value);
+         studentsIdsInput.value = selectedIds.join(",");
+      }
+
+      selectAll.addEventListener("change", function () {
+         checkboxes.forEach(checkbox => checkbox.checked = selectAll.checked);
+         updateButtonVisibility();
+         updateSelectedStudents();
+      });
+
+      checkboxes.forEach(checkbox => {
+         checkbox.addEventListener("change", function () {
+            updateButtonVisibility();
+            updateSelectedStudents();
+         });
+      });
+
+      createGroupBtn.addEventListener("click", updateSelectedStudents);
+   });
+</script>
+
+{% endblock %}
